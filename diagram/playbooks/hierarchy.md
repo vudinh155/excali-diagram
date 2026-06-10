@@ -61,6 +61,7 @@ Patterns used: **Tree** (lines + free-floating text) for mindmaps/taxonomies, **
 - **Depth > 3**: deep trees overflow. Fix: collapse a subtree into a single labeled node, or split into a second diagram.
 - **Crossing connectors**: in org charts, reorder siblings so the elbow lines don't cross.
 - **Unanchored labels**: a floating label not clearly tied to its branch line. Keep labels touching the end of their line; add a tiny dot anchor if ambiguous.
+- **Unbound relation arrows** (ER / concept maps): where you use `arrow`s (not plain `line`s) between entities, bind them both ways — arrow `startBinding`/`endBinding` plus a back-reference in each entity's `boundElements`. See [`../references/binding.md`](../references/binding.md). Plain structural `line`s (org-chart elbows, mindmap branches) are not bound and don't need this.
 
 ## Worked example
 [`../examples/mindmap-hierarchy.excalidraw`](../examples/mindmap-hierarchy.excalidraw) — a central topic with 4 color-coded branches and sub-branches, built from lines + free-floating text (minimal boxes). Render it to see radial fan-out and depth-by-color.

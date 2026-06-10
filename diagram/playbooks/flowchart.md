@@ -56,6 +56,7 @@ End        y=660
 - Reject/error → Error fill `#fecaca` / stroke `#b91c1c`, reached by a **dashed** arrow.
 
 ## Pitfalls (specific to flowcharts)
+- **Unbound branch arrows** (the #1 defect here): a decision fanning to Yes/No/error is **N separate arrows**, and the diamond must back-reference **every** one of them in its `boundElements` (plus each target box back-references its own arrow). Loop-back arrows must be bound at both ends too. Read [`../references/binding.md`](../references/binding.md) and get the back-references right as you write each arrow — a flowchart with detached arrows falls apart the moment anyone moves a box. (Optional one-time check: `check_bindings.py`.)
 - **Unbalanced decisions**: a diamond with text but no clear Yes/No exits reads as a process box. Always label both exits and route them to distinct elements.
 - **Overlapping branch arrows**: the No-branch arrow crossing the main column. Fix: exit from the diamond's *side* vertex and add a waypoint so it bends around.
 - **Loop-backs through boxes**: retry arrows cutting straight through steps. Fix: route them out to the left margin with waypoints.

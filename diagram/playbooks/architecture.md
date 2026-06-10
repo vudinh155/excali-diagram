@@ -31,7 +31,7 @@ Patterns used: **Chain** (the pipeline spine), **Fan-out** (a gateway routing to
 - Canvas width ~`1440`. Bands span x `40 → 1440`, height `180-220`, vertical gap `40px`.
 - **Summary flow at the very top** (multi-zoom Level 1): small free-floating chain `Client → API → Queue → Workers → DB`, y≈`40`, before the bands start (~y=`120`). This is the "national borders" view.
 - Each band = one layer (Level 2): label top-left in CAPS, components placed inside as rounded rectangles `220×90`, horizontal gap `60px`.
-- Cross-layer arrows go **vertically** between bands; intra-layer arrows go horizontally. Bind arrows to both components.
+- Cross-layer arrows go **vertically** between bands; intra-layer arrows go horizontally. **Bind every arrow both ways** — `startBinding`/`endBinding` on the arrow AND a back-reference in each component's `boundElements` (a gateway fanning out to services lists all those arrows). See [`../references/binding.md`](../references/binding.md).
 - **Evidence panels (Level 3)**: place a dark code/JSON panel next to the component it illustrates (e.g. the API's response shape beside the API box). Connect with a thin dotted line or place adjacent.
 
 **Vertical structure (typical):**

@@ -33,7 +33,7 @@ Run through this before declaring a diagram done. Group A is a pre-check for tec
 20. **Fill style**: `"hachure"` for shapes, `"solid"` for layer bands and evidence.
 21. **Opacity**: `100` for every element (no transparency).
 22. **Colors from palette**: Every color comes from `color-palette.md`.
-23. **Valid bindings**: All IDs and `boundElements`/binding references point to elements that exist.
+23. **Two-way bindings**: Every arrow has `startBinding`/`endBinding`, AND each bound box back-references the arrow in its `boundElements`. Fan-out source boxes list **all** outgoing arrows. Bound text has `containerId` + a matching box back-ref. No duplicate ids. No dangling `elementId`. (Optional: `check_bindings.py` can confirm this in one pass — useful for large/fan-out diagrams.)
 
 ## F. Visual verification (render required)
 24. **Rendered to PNG**: The diagram was rendered and inspected with the Read tool.

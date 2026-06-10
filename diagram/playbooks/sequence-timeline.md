@@ -62,6 +62,6 @@ Patterns used: **Timeline** (line + dots + free-floating labels) as the backbone
 [`../examples/timeline-protocol.excalidraw`](../examples/timeline-protocol.excalidraw) — a streaming-protocol session timeline (Connect → Handshake → Authenticated → Streaming → Closed) with alternating labels and a JSON evidence panel for one event. Render it to see marker spacing and label alternation.
 
 ## Variations
-- **Sequence diagram (actors)**: vertical lifelines per actor (lines down from actor boxes), horizontal arrows between lifelines for messages, ordered top→down. Use when two+ parties exchange messages.
+- **Sequence diagram (actors)**: vertical lifelines per actor (lines down from actor boxes), horizontal arrows between lifelines for messages, ordered top→down. Use when two+ parties exchange messages. **Bind each message arrow both ways** to the actor boxes/lifelines it connects (see [`../references/binding.md`](../references/binding.md)). The timeline axis itself is an unbound structural `line` — that's fine.
 - **Gantt-ish roadmap**: horizontal bars (rectangles) per workstream across a shared time axis, instead of point markers.
 - **State machine**: if states loop back (active ⇄ paused), it's a cycle — use ellipse states + arrows with condition labels (borrow from flowchart).

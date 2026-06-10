@@ -13,7 +13,7 @@ You cannot judge a diagram from JSON alone. After creating or editing Excalidraw
 2. **Add one region per edit.** Give each region its own turn — think carefully about layout, spacing, and how it connects to what already exists.
 3. **Use descriptive string IDs** (e.g. `"trigger_rect"`, `"arrow_fan_left"`) so cross-region references are readable.
 4. **Namespace seeds per region** (e.g. region 1 = 100xxx, region 2 = 200xxx) to avoid collisions.
-5. **Update cross-region bindings as you go.** When a new region's element binds to an earlier element (e.g. an arrow connecting regions), edit the older element's `boundElements` array at the same time.
+5. **Update cross-region bindings as you go (BOTH directions).** When a new region's arrow binds to an earlier box, in the **same edit** add the arrow's `startBinding`/`endBinding` AND append `{"id": "<arrowId>", "type": "arrow"}` to the earlier box's `boundElements`. Forgetting the back-reference on the older box is the most common cross-region binding bug. See [`binding.md`](binding.md).
 
 ### Phase 2 — Review the whole
 After all regions exist, read through the full JSON and check:
@@ -21,7 +21,9 @@ After all regions exist, read through the full JSON and check:
 - Is overall spacing balanced, or are some regions cramped while others have too much whitespace?
 - Do all IDs and bindings reference elements that actually exist?
 
-Fix any alignment or binding issues before rendering.
+Fix any alignment or binding issues before rendering. (For a big fan-out or many regions
+where a back-reference is easy to miss, you may optionally run `check_bindings.py` once to
+confirm — see [`binding.md`](binding.md).)
 
 ### Don'ts
 - **Don't generate the whole diagram in one response** — you'll hit the output limit and produce truncated JSON.
@@ -38,6 +40,12 @@ Plan regions around natural visual groups. A typical large diagram splits into:
 Each region should be self-contained: its elements, internal arrows, and any cross-references to adjacent regions.
 
 ---
+
+> **Bindings**: detached arrows are the #1 defect and you cannot see them in a still PNG —
+> a freshly rendered file looks connected even when the back-references are missing. So get
+> binding right **while writing the JSON** (the strict rule in [`binding.md`](binding.md)),
+> not by re-rendering. If you want to verify a finished file you may optionally run
+> `check_bindings.py` once — it is not part of this render loop.
 
 ## How to render
 
@@ -114,3 +122,4 @@ uv run playwright install chromium
 | `'elements' array is empty` | The JSON has no (non-deleted) elements. |
 | `Invalid JSON` | A trailing comma or unclosed bracket — likely a truncated region. Re-emit that region. |
 | Text overflows boxes | The handwriting font is wider than expected; shorten labels or widen containers, then re-render. |
+| Arrow detaches when a box is dragged | The box's `boundElements` is missing the arrow back-reference. Add `{id, type:"arrow"}` to the box (both ends). See [`binding.md`](binding.md); optionally confirm with `check_bindings.py`. |

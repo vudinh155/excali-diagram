@@ -31,7 +31,7 @@ Create `.excalidraw` JSON files that **argue visually**, not merely display info
 | **S2 — Pick a playbook** | Based on the diagram type, pick one playbook below as the primary recipe. Combine two if the diagram is hybrid. | "Pick a playbook" table |
 | **S3 — Map to patterns** | Each major concept uses a **different visual pattern** (fan-out, convergence, tree, cycle…). Never a uniform card grid. | [`visual-patterns.md`](references/visual-patterns.md) |
 | **S4 — Sketch the flow** | Picture how the viewer's eye moves through the diagram. There must be a clear visual story. | [`methodology.md`](references/methodology.md) |
-| **S5 — Build JSON region by region** | Build **one region at a time** (never the whole file at once). Use the schema + templates. | [`json-schema.md`](references/json-schema.md) · [`element-templates.md`](references/element-templates.md) · [`rendering.md`](references/rendering.md) |
+| **S5 — Build JSON region by region** | Build **one region at a time** (never the whole file at once). Use the schema + templates. Every arrow MUST be bound **both ways** (arrow→box AND box→arrow) — get this right as you write each arrow. | [`json-schema.md`](references/json-schema.md) · [`element-templates.md`](references/element-templates.md) · [`binding.md`](references/binding.md) · [`rendering.md`](references/rendering.md) |
 | **S6 — Render & verify** | **MANDATORY**: render to PNG → Read the PNG → fix → loop until it's right. Never ship a diagram from JSON alone. | [`rendering.md`](references/rendering.md) · [`quality-checklist.md`](references/quality-checklist.md) |
 
 ---
@@ -53,12 +53,13 @@ Each playbook points to a **real, render-verified example** in [`examples/`](exa
 
 ## Hard rules (do not violate)
 
-1. **Build JSON one region at a time** — do NOT try to emit the whole file in one response. The ~32k-token output limit will truncate large JSON → broken file. Even when it fits, region-by-region produces better quality. (Strategy: [`rendering.md`](references/rendering.md).)
-2. **Do NOT use a coding agent** to generate the JSON — agents lack the skill's rules context.
-3. **Do NOT write a Python script to generate JSON** — the indirection makes debugging harder. Hand-written JSON with descriptive IDs (e.g. `trigger_rect`, `arrow_fan_left`) is easier to maintain.
-4. **MANDATORY render-verify loop** (S6) — you cannot judge a diagram from JSON alone. Usually 2-4 iterations.
-5. **Colors come only from [`color-palette.md`](references/color-palette.md)** — color encodes meaning; never invent new colors.
-6. **Render defaults**: `roughness: 2`, `fontFamily: 1`, `fillStyle: "hachure"` (shapes) / `"solid"` (layer bands & evidence), `opacity: 100`.
+1. **Bind every arrow BOTH ways.** An arrow needs `startBinding`/`endBinding` pointing at its boxes **and** each box must back-reference the arrow in its `boundElements`. Writing only the first half is the #1 defect: the file looks fine but arrows detach the moment a box moves. A fan-out (1→many) is N separate arrows, and the shared source box must list **all** of them. Read [`binding.md`](references/binding.md) before drawing anything with arrows. (Optional: `check_bindings.py` can confirm bindings in one cheap pass — see below — but the rule is what matters; get it right while writing.)
+2. **Build JSON one region at a time** — do NOT try to emit the whole file in one response. The ~32k-token output limit will truncate large JSON → broken file. Even when it fits, region-by-region produces better quality. (Strategy: [`rendering.md`](references/rendering.md).)
+3. **Do NOT use a coding agent** to generate the JSON — agents lack the skill's rules context.
+4. **Do NOT write a Python script to generate JSON** — the indirection makes debugging harder. Hand-written JSON with descriptive IDs (e.g. `trigger_rect`, `arrow_fan_left`) is easier to maintain.
+5. **MANDATORY render-verify loop** (S6) — you cannot judge a diagram from JSON alone. Usually 2-4 iterations.
+6. **Colors come only from [`color-palette.md`](references/color-palette.md)** — color encodes meaning; never invent new colors.
+7. **Render defaults**: `roughness: 2`, `fontFamily: 1`, `fillStyle: "hachure"` (shapes) / `"solid"` (layer bands & evidence), `opacity: 100`.
 
 ---
 
@@ -70,13 +71,15 @@ Each playbook points to a **real, render-verified example** in [`examples/`](exa
 
 **Technical reference**
 - [`references/json-schema.md`](references/json-schema.md) — Excalidraw JSON schema
+- [`references/binding.md`](references/binding.md) — **arrow binding (two-way) — read before any diagram with arrows**; geometry, fan-out, convergence, labels, the linter
 - [`references/element-templates.md`](references/element-templates.md) — copy-paste JSON template per element type
 - [`references/color-palette.md`](references/color-palette.md) — brand colors + render defaults (color source of truth)
 - [`references/rendering.md`](references/rendering.md) — render & verify loop, large-diagram strategy, setup, troubleshooting
 - [`references/quality-checklist.md`](references/quality-checklist.md) — final quality checklist
+- `references/check_bindings.py` — **optional** binding linter; run it once if you want to self-check a finished file (not required, not auto-run)
 
 **Playbooks per diagram type** → [`playbooks/`](playbooks/) · **Real examples** → [`examples/`](examples/)
 
 ---
 
-**START**: Read `methodology.md` + `color-palette.md`, assess depth (S0), pick a playbook (S2), build JSON region by region, then **render-verify until it's right**. Match the user's language for the diagram text.
+**START**: Read `methodology.md` + `color-palette.md` (+ `binding.md` if the diagram has arrows), assess depth (S0), pick a playbook (S2), build JSON region by region (binding every arrow both ways as you go), then **render-verify until it's right**. Match the user's language for the diagram text.

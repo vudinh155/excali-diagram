@@ -53,17 +53,28 @@ Every element shares these properties:
 | `startArrowhead` | null, "arrow", "bar", "dot", "triangle" |
 | `endArrowhead` | null, "arrow", "bar", "dot", "triangle" |
 
-## Binding format
+## Binding format (TWO-WAY — read [`binding.md`](binding.md))
+
+Binding is stored in **two places that must agree**. An arrow names its boxes:
 
 ```json
-{
-  "elementId": "shapeId",
-  "focus": 0,
-  "gap": 2
-}
+"startBinding": { "elementId": "boxA", "focus": 0, "gap": 4 },
+"endBinding":   { "elementId": "boxB", "focus": 0, "gap": 4 }
 ```
 
-A bound shape should list the arrow in its `boundElements`: `"boundElements": [{"id": "arrow1", "type": "arrow"}]`. A shape with bound text lists `{"id": "text1", "type": "text"}`.
+…**and each box must name the arrow back** in its `boundElements`:
+
+```json
+// inside boxA AND inside boxB:
+"boundElements": [{ "id": "arrow1", "type": "arrow" }]
+```
+
+Writing only the first half (the arrow's bindings) is the #1 AI defect: the file opens
+looking connected, but arrows detach as soon as a box is dragged. A box with bound text
+lists it too: `{"id": "text1", "type": "text"}` — append, don't overwrite. `focus` is
+`−1..1` (0 = center); `gap` is the edge clearance in px (2–8). For geometry (how to set
+the arrow's `x`/`y`/`points` from box edges), fan-out, convergence, and the optional
+linter, see [`binding.md`](binding.md).
 
 ## Rounded rectangle corners
 

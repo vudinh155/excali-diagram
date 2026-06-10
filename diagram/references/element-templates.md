@@ -116,6 +116,10 @@ Copy-paste JSON templates for each Excalidraw element type. The `strokeColor` an
   "roundness": {"type": 3}
 }
 ```
+**`boundElements` holds every element bound to this box** — its label text AND every arrow
+touching it. A box that is the start/end of arrows `a1` and `a2` and holds text `text1`:
+`"boundElements": [{"id":"text1","type":"text"},{"id":"a1","type":"arrow"},{"id":"a2","type":"arrow"}]`.
+Missing an arrow here = that arrow detaches on drag. (See [`binding.md`](binding.md).)
 
 ## Layer band (full-width background for grouping)
 ```json
@@ -274,7 +278,14 @@ Lane label (free-floating, top-left of the band):
   "endArrowhead": "arrow"
 }
 ```
-For a curved arrow or to route around an element, use 3+ points in `points` (waypoints).
+**CRITICAL — binding is two-way.** This arrow names `elem1`/`elem2`, but that is only
+half. You MUST also add `{"id": "arrow1", "type": "arrow"}` to **both** `elem1.boundElements`
+and `elem2.boundElements` (append it next to any existing `text` entry — see the Rectangle
+template). Skip this and the arrow detaches when a box is dragged. The arrow's own
+`boundElements` stays `null`. For a fan-out, the source box lists **every** arrow leaving it.
+Place the arrow's start point on the source box's edge and its end point on the target's
+edge (geometry recipe in [`binding.md`](binding.md)). For a curved arrow or to route around
+an element, use 3+ points in `points` (waypoints).
 
 ## Dashed arrow (async / optional / "no" branch)
 Same as the arrow above but with a dashed stroke — use for optional flows, async messages, or fallback/"no" branches. Set:
